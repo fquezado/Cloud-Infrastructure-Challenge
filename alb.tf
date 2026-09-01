@@ -1,4 +1,4 @@
-resource "aws_lb" "ec2_alb" {
+resource "aws_lb" "alb" {
   name               = "ec2-alb"
   internal           = false
   load_balancer_type = "application"
