@@ -7,4 +7,3 @@ resource "aws_instance" "ec2_instance" {
     Name = "EC2Instance"
   }
 }
-w
