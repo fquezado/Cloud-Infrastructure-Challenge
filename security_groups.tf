@@ -23,6 +23,7 @@ resource "aws_security_group" "ec2_sg" {
   description = "Security group for EC2 instance"
   vpc_id      = aws_vpc.main_vpc.id
 
+  // Allow SSH access from the VPC CIDR block
   ingress {
     from_port   = 22
     to_port     = 22
@@ -30,6 +31,7 @@ resource "aws_security_group" "ec2_sg" {
     cidr_blocks = [var.vpc_cidr]
   }
 
+  // Allow inbound traffic from the ALB security group
   ingress {
     from_port       = 80
     to_port         = 80
