@@ -1,3 +1,15 @@
+// Main VPC
+resource "aws_vpc" "main_vpc" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = {
+    Name = "MainVPC"
+  }
+}
+
+// Public Subnets
 resource "aws_subnet" "public_subnet" {
   count                   = 2
   vpc_id                  = aws_vpc.main_vpc.id
@@ -10,6 +22,7 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
+// Private Subnets
 resource "aws_subnet" "private_subnet" {
   count                   = 2
   vpc_id                  = aws_vpc.main_vpc.id
