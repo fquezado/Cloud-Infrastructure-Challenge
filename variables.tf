@@ -28,7 +28,7 @@ variable "key_name" {
 variable "vpc_cidr" {
   description = "The CIDR block for the VPC"
   type        = string
-  default     = null
+  default     = "10.0.0.0/16"
 }
 
 variable "public_subnet_cidrs" {

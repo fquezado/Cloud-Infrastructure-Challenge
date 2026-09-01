@@ -4,4 +4,3 @@ private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
 azs                  = ["us-east-1a", "us-east-1b"]
 ami_id               = "ami-xxxxxxxx"
 key_name             = "your-key-pair"
-subnet_ids           = [] # should reference public subnet IDs once subnets exist
