@@ -32,6 +32,6 @@ variable "private_subnet_cidrs" {
 }
 
 variable "azs" {
-  description = "List of availability zones (I am staying on east coast)"
+  description = "List of availability zones for subnet placing(I am staying on east coast)"
   type        = list(string)
 }
