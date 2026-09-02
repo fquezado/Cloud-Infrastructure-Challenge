@@ -7,3 +7,7 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Just in case to ignore any keys or certificates that might be generated
+*.pem
+*.key
