@@ -10,11 +10,6 @@ variable "instance_type" {
   default     = "t3.micro"
 }
 
-//variable "key_name" {
-//description = "The name of the key pair for SSH access" NOT NEEDED ATM
-//type        = string
-//}
-
 variable "vpc_cidr" {
   description = "The CIDR block for the VPC"
   type        = string
