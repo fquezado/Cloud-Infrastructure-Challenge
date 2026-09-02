@@ -45,20 +45,22 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
+// Assigns an Elastic IP to the NAT Gateway for internet access
+resource "aws_eip" "nat_eip" {
+  count  = 2
+  domain = "vpc"
+}
+
 // Allows instances in private subnets to access the internet through the NAT Gateway
 resource "aws_nat_gateway" "nat_gw" {
-  allocation_id = aws_eip.nat_eip.id
-  subnet_id     = aws_subnet.public_subnet[0].id
+  count         = 2
+  allocation_id = aws_eip.nat_eip[count.index].id
+  subnet_id     = aws_subnet.public_subnet[count.index].id
   depends_on    = [aws_internet_gateway.igw]
 
   tags = {
     Name = "MainNATGW"
   }
-}
-
-// Assigns an Elastic IP to the NAT Gateway for internet access
-resource "aws_eip" "nat_eip" {
-  domain = "vpc"
 }
 
 // Routes traffic for the IGW and NAT Gateway to the appropriate destinations
@@ -84,7 +86,7 @@ resource "aws_route_table" "private_rt" {
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gw.id
+    nat_gateway_id = aws_nat_gateway.nat_gw[count.index].id
   }
 }
 
