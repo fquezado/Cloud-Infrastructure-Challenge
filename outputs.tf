@@ -7,3 +7,8 @@ output "alb_dns_name" {
   description = "The DNS name of the Application Load Balancer"
   value       = aws_lb.alb.dns_name
 }
+
+output "alb_https_url" {
+  description = "HTTPS URL for the application"
+  value       = "https://${aws_lb.alb.dns_name}"
+}

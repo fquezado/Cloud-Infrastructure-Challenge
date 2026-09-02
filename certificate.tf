@@ -10,6 +10,7 @@ resource "tls_self_signed_cert" "self_signed_cert" {
     common_name  = aws_lb.alb.dns_name
     organization = "Fernando Quezado"
   }
+  dns_names = [aws_lb.alb.dns_name]
 
   validity_period_hours = 8760
 

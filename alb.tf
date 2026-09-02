@@ -8,6 +8,10 @@ resource "aws_lb" "alb" {
   tags = {
     Name = "EC2ALB"
   }
+
+  depends_on = [
+    aws_route_table_association.public_rt_assoc
+  ]
 }
 
 resource "aws_lb_target_group" "alb_target_group" {
