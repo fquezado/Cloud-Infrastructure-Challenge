@@ -9,7 +9,7 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
-// Public Subnets
+// Public Subnets TWO are created
 resource "aws_subnet" "public_subnet" {
   count                   = 2
   vpc_id                  = aws_vpc.main_vpc.id
@@ -22,7 +22,7 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-// Private Subnets
+// Private Subnets TWO are created
 resource "aws_subnet" "private_subnet" {
   count                   = 2
   vpc_id                  = aws_vpc.main_vpc.id
@@ -33,4 +33,63 @@ resource "aws_subnet" "private_subnet" {
   tags = {
     Name = "PrivateSubnet-${count.index}"
   }
+}
+
+// Acts as gatekeeper for the public subnets to access the internet
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main_vpc.id
+
+
+  tags = {
+    Name = "MainIGW"
+  }
+}
+
+// Allows instances in private subnets to access the internet through the NAT Gateway
+resource "aws_nat_gateway" "nat_gw" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.public_subnet[0].id
+  depends_on    = [aws_internet_gateway.igw]
+
+  tags = {
+    Name = "MainNATGW"
+  }
+}
+
+// Assigns an Elastic IP to the NAT Gateway for internet access
+resource "aws_eip" "nat_eip" {
+  domain = "vpc"
+}
+
+// Routes traffic for the IGW and NAT Gateway to the appropriate destinations
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+}
+
+// Route table for public subnets
+resource "aws_route_table_association" "public_rt_assoc" {
+  count          = 2
+  subnet_id      = aws_subnet.public_subnet[count.index].id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+// Route table for private subnets
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gw.id
+  }
+}
+
+resource "aws_route_table_association" "private_rt_assoc" {
+  count          = 2
+  subnet_id      = aws_subnet.private_subnet[count.index].id
+  route_table_id = aws_route_table.private_rt.id
 }
