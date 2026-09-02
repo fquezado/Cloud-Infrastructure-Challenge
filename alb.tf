@@ -31,6 +31,7 @@ resource "aws_lb_target_group" "alb_target_group" {
   }
 }
 
+// Attachment to link the ALB target group with the EC2 instance
 resource "aws_lb_target_group_attachment" "alb_target_group_attachment" {
   target_group_arn = aws_lb_target_group.alb_target_group.arn
   target_id        = aws_instance.ec2_instance.id
@@ -50,5 +51,25 @@ resource "aws_lb_listener" "http_redirect" {
       protocol    = "HTTPS"
       status_code = "HTTP_301"
     }
+  }
+
+  tags = {
+    Name = "EC2ALBHTTPRedirect"
+  }
+}
+
+resource "aws_lb_listener" "https_listener" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  //certificate_arn   = var.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.alb_target_group.arn
+  }
+
+  tags = {
+    Name = "EC2ALBHTTPSListener"
   }
 }
