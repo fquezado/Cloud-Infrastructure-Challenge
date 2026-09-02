@@ -4,11 +4,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "subnet_ids" {
-  description = "List of subnet IDs for the ALB"
-  type        = list(string)
-}
-
 variable "ami_id" {
   description = "The AMI ID for the EC2 instance"
   type        = string

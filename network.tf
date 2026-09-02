@@ -49,6 +49,10 @@ resource "aws_internet_gateway" "igw" {
 resource "aws_eip" "nat_eip" {
   count  = 2
   domain = "vpc"
+
+  tags = {
+    Name = "MainNATEIP-${count.index}"
+  }
 }
 
 // Allows instances in private subnets to access the internet through the NAT Gateway
@@ -59,11 +63,11 @@ resource "aws_nat_gateway" "nat_gw" {
   depends_on    = [aws_internet_gateway.igw]
 
   tags = {
-    Name = "MainNATGW"
+    Name = "MainNATGW-${count.index}"
   }
 }
 
-// Routes traffic for the IGW and NAT Gateway to the appropriate destinations
+// Routes table for public subnets
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.main_vpc.id
 
@@ -71,9 +75,13 @@ resource "aws_route_table" "public_rt" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
+
+  tags = {
+    Name = "MainPublicRT"
+  }
 }
 
-// Route table for public subnets
+// Route table association for public subnets
 resource "aws_route_table_association" "public_rt_assoc" {
   count          = 2
   subnet_id      = aws_subnet.public_subnet[count.index].id
@@ -82,16 +90,22 @@ resource "aws_route_table_association" "public_rt_assoc" {
 
 // Route table for private subnets
 resource "aws_route_table" "private_rt" {
+  count  = 2
   vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat_gw[count.index].id
   }
+
+  tags = {
+    Name = "MainPrivateRT-${count.index}"
+  }
 }
 
+// Route table association for private subnets
 resource "aws_route_table_association" "private_rt_assoc" {
   count          = 2
   subnet_id      = aws_subnet.private_subnet[count.index].id
-  route_table_id = aws_route_table.private_rt.id
+  route_table_id = aws_route_table.private_rt[count.index].id
 }
